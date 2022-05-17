@@ -21,12 +21,9 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10 )
 [node name="Label" type="Label" parent="."]
 margin_right = 141.0
 margin_bottom = 74.0
-custom_fonts/font = SubResource( 1 )
 custom_colors/font_color = Color( 0.4, 0, 0, 1 )
-text = "Score: 0"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+custom_fonts/font = SubResource( 1 )
+text = "0 gec"
 
 [node name="Control" type="Control" parent="."]
 margin_right = 1278.0

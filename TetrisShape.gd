@@ -52,6 +52,7 @@ var board_height_
 var board_width_
 var type_
 var rotation_
+var being_destroyed_ = false
 
 var board_
 var animator_
@@ -97,6 +98,21 @@ func createCubeMesh(var x, var y, var c):
 	newInstance.scale = Vector3(CUBE_SIDE/2, CUBE_SIDE/2, CUBE_SIDE/2)
 	return newInstance
 
+func update():
+	if being_destroyed_:
+		if !animator_.isAnimated(self):
+			for i in range(4):
+				var fieldx = SHAPE[type_][rotation_][2][i][0]+shift_from_left_;
+				var fieldy = SHAPE[type_][rotation_][2][i][1]+fallen_distance_;
+				var child = self.get_children().back()
+				board_[fieldx][fieldy] = child;
+				self.remove_child(child)
+				self.get_parent().add_child(child)
+				self.get_parent().line_counts_[fieldy] += 1
+				animator_.stopAnimation(child)
+				child.translation = ORIGINAL_POSITION + Vector3(fieldx*CUBE_SIDE, -fieldy*CUBE_SIDE, 0)
+			being_destroyed_ = false
+
 func createRandomShape():
 	type_ = randi()%7
 	rotation_ = randi()%4
@@ -135,16 +151,7 @@ func fallOne():
 		fallen_distance_ += 1;
 		animator_.translate(self, Vector3(0, -CUBE_SIDE, 0))
 	else:
-		for i in range(4):
-			var fieldx = SHAPE[type_][rotation_][2][i][0]+shift_from_left_;
-			var fieldy = SHAPE[type_][rotation_][2][i][1]+fallen_distance_;
-			var child = self.get_children().back()
-			board_[fieldx][fieldy] = child;
-			self.remove_child(child)
-			self.get_parent().add_child(child)
-			self.get_parent().line_counts_[fieldy] += 1
-			animator_.stopAnimation(child)
-			child.translation = ORIGINAL_POSITION + Vector3(fieldx*CUBE_SIDE, -fieldy*CUBE_SIDE, 0)
+		being_destroyed_ = true
 
 func tryRotate():
 	if self.get_children().empty():

@@ -92,7 +92,7 @@ func checkFullLines():
 			i += 1
 			score_ += 1
 			step_time_ *= 0.99
-			self.get_parent().get_child(0).text = "Score: " + String(score_)
+			self.get_parent().get_child(0).text = String(score_) + " gecs"
 			for j in range(i-1, 0, -1):
 				line_counts_[j] = line_counts_[j-1]
 			
@@ -111,7 +111,17 @@ func checkFullLines():
 #			continue
 
 func makeStep():
+	checkFullLines()
 	moving_shape_.fallOne()
+
+func _process(delta):
+	if time_ > step_time_:
+		time_ -= step_time_
+		makeStep()
+	time_ += delta
+	input_handler_.update(delta)
+	animator_.update(delta)
+	moving_shape_.update()
 	if moving_shape_.get_children().empty():
 		moving_shape_.setType(next_shape_.getType())
 		moving_shape_.setRotation(next_shape_.getRotation())
@@ -125,13 +135,4 @@ func makeStep():
 		next_shape_.createRandomShape()
 		if !moving_shape_.canMove(0, 0):
 			gameOver()
-	checkFullLines()
-
-func _process(delta):
-	if time_ > step_time_:
-		time_ -= step_time_
-		makeStep()
-	time_ += delta
-	input_handler_.update(delta)
-	animator_.update(delta)
 

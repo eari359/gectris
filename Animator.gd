@@ -1,6 +1,9 @@
 var animated_list_ = Dictionary()
 var destroy_list_ = Dictionary()
 
+func isAnimated(var node) -> bool:
+	return node in animated_list_
+
 func stopAnimation(var node):
 	assert(node != null)
 	if animated_list_.has(node):
@@ -23,6 +26,7 @@ func translate(var node, var v, var amt = 10.0):
 	else:
 		animated_list_[node] = [v, amt]
 
+const SCALE_AMT = 0.9
 func update(var delta):
 	var amt = delta * 10
 	for node in animated_list_.keys():
@@ -37,12 +41,11 @@ func update(var delta):
 			node.translate(node_vec)
 			animated_list_.erase(node)
 	
-	var scale_amt = 0.9
 	for node in destroy_list_.keys():
 		var s = destroy_list_[node]
 		if s > 0.01:
-			node.scale = Vector3(s * scale_amt, s * scale_amt, s * scale_amt)
-			destroy_list_[node] = s * scale_amt
+			node.scale = Vector3(s * SCALE_AMT, s * SCALE_AMT, s * SCALE_AMT)
+			destroy_list_[node] = s * SCALE_AMT
 		else:
 			destroy_list_.erase(node)
 			if (animated_list_.has(node)):
