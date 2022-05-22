@@ -1,0 +1,49 @@
+name: godot-ci
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  EXPORT_NAME: gectris
+  GODOT_VERSION: 3.4.4
+
+jobs:
+  export-web:
+    name: Web Export
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:3.4.4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/templates
+          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+          apt-get update && apt-get install -y rsync
+
+      - name: Web Build
+        run: |
+          cd project
+          mkdir ./$EXPORT_NAME
+          rsync -Rr . ./$EXPORT_NAME
+          cd $EXPORT_NAME
+          mkdir -v -p build/web
+          godot -v --export "HTML5" build/web/index.html
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: web
+          path: project/${{ env.EXPORT_NAME }}/build/web
+
+      - name: Publish to itch.io
+        uses: josephbmanley/butler-publish-itchio-action@v1.0.3
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
+          CHANNEL: web
+          ITCH_GAME: gectris
+          ITCH_USER: eari359
+          PACKAGE: project/${{ env.EXPORT_NAME }}/build/web
