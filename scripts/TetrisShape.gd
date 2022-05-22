@@ -30,16 +30,6 @@ const SHAPE = [
 [ shapeT1, shapeT2, shapeT3, shapeT4, ],
 ];
 
-const COLOR = [
-	Color(0, 0, 1),
-	Color(0, 1, 0),
-	Color(0, 1, 1),
-	Color(1, 0, 0),
-	Color(1, 0, 1),
-	Color(1, 1, 0),
-	Color(1, 1, 1)
-]
-
 const CUBE_SIDE = 0.3
 
 static func getCubeSide():
@@ -91,7 +81,6 @@ func createCubeMesh(var x, var y, var c):
 	var newInstance = MeshInstance.new()
 	newInstance.mesh = CubeMesh.new()
 	var mat = SpatialMaterial.new()
-	#mat.albedo_color = COLOR[c]
 	mat.albedo_color = c
 	newInstance.mesh.surface_set_material(0, mat)
 	newInstance.translation = Vector3(x*CUBE_SIDE, -y*CUBE_SIDE, 0)
@@ -116,7 +105,6 @@ func update():
 func createRandomShape():
 	type_ = randi()%7
 	rotation_ = randi()%4
-	#var col = randi()%7
 	var col = Color(randf(), randf(), randf())
 	add_child(createCubeMesh(SHAPE[type_][rotation_][2][0][0], SHAPE[type_][rotation_][2][0][1], col))
 	add_child(createCubeMesh(SHAPE[type_][rotation_][2][1][0], SHAPE[type_][rotation_][2][1][1], col))
@@ -184,7 +172,4 @@ func tryRotate():
 			animator_.setTranslation(child, Vector3(
 				CUBE_SIDE*SHAPE[type_][rotation_][2][i][0],
 				-CUBE_SIDE*SHAPE[type_][rotation_][2][i][1], 0), 17.5)
-			#child.translation = Vector3(
-			#	CUBE_SIDE*SHAPE[type_][rotation_][2][i][0],
-			#	-CUBE_SIDE*SHAPE[type_][rotation_][2][i][1], 0)
 

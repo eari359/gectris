@@ -1,8 +1,8 @@
 extends Spatial
 
-var TetrisShape = preload("res://TetrisShape.gd")
-var Animator = preload("res://Animator.gd")
-var InputHandler = preload("res://InputHandler.gd")
+var TetrisShape = preload("res://scripts/TetrisShape.gd")
+var Animator = preload("res://scripts/Animator.gd")
+var InputHandler = preload("res://scripts/InputHandler.gd")
 
 const FIELD_WIDTH = 10
 const FIELD_HEIGHT = 14
@@ -18,9 +18,7 @@ var time_
 var step_time_
 
 func prepareShapes():
-	#moving_shape_ = 
 	moving_shape_ = TetrisShape.new(game_field_, animator_)
-	#moving_shape_.add_child()
 	next_shape_ = TetrisShape.new(game_field_, animator_)
 	next_shape_.createRandomShape();
 	next_shape_.translate(Vector3(4, 0, 0))
@@ -58,6 +56,7 @@ func initAll():
 	input_handler_ = InputHandler.new(moving_shape_, animator_)
 
 func _ready():
+	$"../AudioStreamPlayer".play()
 	initAll()
 	self.get_parent().get_children()[1].connect("swipe", self, "swiped")
 
@@ -76,6 +75,7 @@ func swiped(var dir):
 		moving_shape_.fallOne()
 
 func removeLine(var to):
+	$"../AudioStreamPlayer".play()
 	for i in range(FIELD_WIDTH):
 		animator_.destroy(game_field_[i][to])
 	for i in range(to-1, -1, -1):
@@ -92,23 +92,12 @@ func checkFullLines():
 			i += 1
 			score_ += 1
 			step_time_ *= 0.99
-			self.get_parent().get_child(0).text = String(score_) + " gecs"
+			if score_ == 1:
+				self.get_parent().get_child(0).text = "uno gecko"
+			else:
+				self.get_parent().get_child(0).text = String(score_) + " gecs"
 			for j in range(i-1, 0, -1):
 				line_counts_[j] = line_counts_[j-1]
-			
-#	var full
-#	for i in range(FIELD_HEIGHT-1, -1, -1):
-#		full = 0
-#		for j in range(FIELD_WIDTH):
-#			if game_field_[j][i] != null:
-#				full += 1
-#		if (full == FIELD_WIDTH):
-#			removeLine(i)
-#			i += 1
-#			score += 1
-#			step_time_ *= 0.99
-#			self.get_child(0).text = "Score: " + String(score)
-#			continue
 
 func makeStep():
 	checkFullLines()

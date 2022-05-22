@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/gec.wav-9e8c20a1e52a580c999f7e6f04893eb8.sample"
+
+[deps]
+
+source_file="res://audio/gec.wav"
+dest_files=[ "res://.import/gec.wav-9e8c20a1e52a580c999f7e6f04893eb8.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

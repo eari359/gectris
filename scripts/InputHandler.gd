@@ -1,4 +1,4 @@
-var TetrisShape = preload("res://TetrisShape.gd")
+var TetrisShape = preload("res://scripts/TetrisShape.gd")
 
 var moving_shape_
 var animator_
