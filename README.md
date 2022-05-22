@@ -1,4 +1,4 @@
-# Testris
-Just another tetris clone
+# gectris
+GEC GEC GEC
 
-Playable in browser: https://eari359.itch.io/testris
+Playable in browser: https://eari359.itch.io/gectris
