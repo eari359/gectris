@@ -4,12 +4,13 @@ var TetrisShape = preload("res://scripts/TetrisShape.gd")
 var Animator = preload("res://scripts/Animator.gd")
 var InputHandler = preload("res://scripts/InputHandler.gd")
 
-onready var ScreenShader = $"../Camera/CanvasLayer/ColorRect".material
+onready var ScreenShader = $"../Camera/CanvasLayer/ShaderRect"
 onready var GecSound = $"../audio/gec"
 onready var BoofSound = $"../audio/boof"
 
 onready var SwipeHandler = $"../SwipeHandler"
 onready var GecLabel = $"../GecLabel"
+onready var Floor = $"../Floor"
 
 const FIELD_WIDTH = 10
 const FIELD_HEIGHT = 14
@@ -23,7 +24,7 @@ var line_counts_
 var score_
 var time_
 var step_time_
-var trip_timer_
+
 
 func prepareShapes():
 	moving_shape_ = TetrisShape.new(game_field_, animator_)
@@ -62,15 +63,7 @@ func initAll():
 	initVars()
 	prepareShapes()
 	input_handler_ = InputHandler.new(moving_shape_, animator_)
-	initTripTimer()
-
-func initTripTimer():
-	trip_timer_ = Timer.new()
-	add_child(trip_timer_)
-	trip_timer_.set_one_shot(true)
-	trip_timer_.set_wait_time(15.0)
-	trip_timer_.connect("timeout", self, "stop_trip")
-
+	Floor.reset_texture()
 
 func _ready():
 	GecSound.play()
@@ -110,21 +103,15 @@ func checkFullLines():
 func add_score():
 	score_ += 1
 	step_time_ *= 0.99
-	if score_ == 1:
-		GecLabel.text = "uno gecko"
-	else:
-		GecLabel.text = String(score_) + " gecs"
-		if (score_ + 7) % 10 == 0:
-			execute_trip()
+	GecLabel.update_text(score_)
+	if (score_ + 7) % 10 == 0:
+		execute_trip()
+	if score_ % 10 == 0:
+		Floor.change_texture()
 
 func execute_trip():
 	BoofSound.play()
-	ScreenShader.set_shader_param("trip_level", lerp(20.0, 100.0, randf()))
-	ScreenShader.set_shader_param("trip", true)
-	trip_timer_.start()
-
-func stop_trip():
-	ScreenShader.set_shader_param("trip", false)
+	ScreenShader.execute_trip()
 
 func makeStep():
 	checkFullLines()
@@ -151,4 +138,5 @@ func _process(delta):
 		next_shape_.createRandomShape()
 		if !moving_shape_.canMove(0, 0):
 			gameOver()
-
+	if OS.is_debug_build() && Input.is_key_pressed(KEY_SPACE):
+		add_score()

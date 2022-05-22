@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://scripts/GameBoard.gd" type="Script" id=1]
 [ext_resource path="res://OdibeeSans-Regular.ttf" type="DynamicFontData" id=2]
@@ -7,6 +7,9 @@
 [ext_resource path="res://audio/gec.wav" type="AudioStream" id=5]
 [ext_resource path="res://shaders/screen_shader.tres" type="Shader" id=6]
 [ext_resource path="res://audio/boof.wav" type="AudioStream" id=7]
+[ext_resource path="res://scripts/GecLabel.gd" type="Script" id=8]
+[ext_resource path="res://scripts/ShaderRect.gd" type="Script" id=9]
+[ext_resource path="res://scripts/Floor.gd" type="Script" id=11]
 
 [sub_resource type="DynamicFont" id=1]
 size = 40
@@ -18,6 +21,8 @@ shader_param/trip = false
 shader_param/trip_level = null
 
 [sub_resource type="PlaneMesh" id=2]
+
+[sub_resource type="SpatialMaterial" id=7]
 
 [sub_resource type="CubeMesh" id=3]
 
@@ -32,6 +37,7 @@ margin_bottom = 74.0
 custom_colors/font_color = Color( 0.4, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
 text = "zero gec :("
+script = ExtResource( 8 )
 
 [node name="SwipeHandler" type="Control" parent="."]
 margin_right = 1278.0
@@ -44,10 +50,11 @@ fov = 80.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera"]
 
-[node name="ColorRect" type="ColorRect" parent="Camera/CanvasLayer"]
+[node name="ShaderRect" type="ColorRect" parent="Camera/CanvasLayer"]
 material = SubResource( 6 )
 anchor_right = 1.0
 anchor_bottom = 1.0
+script = ExtResource( 9 )
 
 [node name="GameBoard" type="Spatial" parent="."]
 script = ExtResource( 1 )
@@ -55,10 +62,11 @@ script = ExtResource( 1 )
 [node name="moving_shape" type="Spatial" parent="GameBoard"]
 script = ExtResource( 4 )
 
-[node name="floor" type="MeshInstance" parent="."]
-transform = Transform( 5, 0, 0, 0, 1, 0, 0, 0, 5, 0, -2.05, 0 )
+[node name="Floor" type="MeshInstance" parent="."]
+transform = Transform( 5, 0, 0, 0, 1, 0, 0, 0, 5, 0, -2.05, -1 )
 mesh = SubResource( 2 )
-material/0 = null
+material/0 = SubResource( 7 )
+script = ExtResource( 11 )
 
 [node name="SpotLight" type="SpotLight" parent="."]
 transform = Transform( 1, 0, 0, 0, -0.151468, 0.988462, 0, -0.988462, -0.151468, 0, 6.7704, -1.54254 )
