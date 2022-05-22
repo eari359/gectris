@@ -1,0 +1,30 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type canvas_item;
+
+uniform bool trip = false;
+uniform float trip_level : hint_range(20.0, 100.0);
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float fix_range(float x)
+{
+	return (x*0.5) + 0.5;
+}
+
+void fragment()
+{
+	vec4 screen_col = texture(SCREEN_TEXTURE, SCREEN_UV);
+	if (trip) {
+//		float rnd = rand(vec2(TIME, 0.0));
+//		screen_col.rgb = (sin(screen_col.rgb * trip_level * SCREEN_UV.y * SCREEN_UV.x)
+//		* 0.5) + vec3(0.5);
+		screen_col.r = fix_range(sin(screen_col.r * trip_level + TIME*0.6));
+		screen_col.g = fix_range(cos(screen_col.g * trip_level + TIME*0.6));
+		screen_col.b = fix_range(sin(screen_col.b * trip_level + TIME*0.6));
+	}
+	COLOR = screen_col;
+}"

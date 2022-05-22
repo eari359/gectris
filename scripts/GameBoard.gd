@@ -4,6 +4,11 @@ var TetrisShape = preload("res://scripts/TetrisShape.gd")
 var Animator = preload("res://scripts/Animator.gd")
 var InputHandler = preload("res://scripts/InputHandler.gd")
 
+onready var ScreenShader = $"../Camera/CanvasLayer/ColorRect".material
+onready var GecSound = $"../audio/gec"
+onready var BoofSound = $"../audio/boof"
+
+
 const FIELD_WIDTH = 10
 const FIELD_HEIGHT = 14
 
@@ -16,6 +21,7 @@ var line_counts_
 var score_
 var time_
 var step_time_
+var trip_timer_
 
 func prepareShapes():
 	moving_shape_ = TetrisShape.new(game_field_, animator_)
@@ -54,9 +60,18 @@ func initAll():
 	initVars()
 	prepareShapes()
 	input_handler_ = InputHandler.new(moving_shape_, animator_)
+	initTripTimer()
+
+func initTripTimer():
+	trip_timer_ = Timer.new()
+	add_child(trip_timer_)
+	trip_timer_.set_one_shot(true)
+	trip_timer_.set_wait_time(15.0)
+	trip_timer_.connect("timeout", self, "stop_trip")
+
 
 func _ready():
-	$"../AudioStreamPlayer".play()
+	GecSound.play()
 	initAll()
 	self.get_parent().get_children()[1].connect("swipe", self, "swiped")
 
@@ -75,7 +90,7 @@ func swiped(var dir):
 		moving_shape_.fallOne()
 
 func removeLine(var to):
-	$"../AudioStreamPlayer".play()
+	GecSound.play()
 	for i in range(FIELD_WIDTH):
 		animator_.destroy(game_field_[i][to])
 	for i in range(to-1, -1, -1):
@@ -90,14 +105,28 @@ func checkFullLines():
 		if (line_counts_[i] == FIELD_WIDTH):
 			removeLine(i)
 			i += 1
-			score_ += 1
-			step_time_ *= 0.99
-			if score_ == 1:
-				self.get_parent().get_child(0).text = "uno gecko"
-			else:
-				self.get_parent().get_child(0).text = String(score_) + " gecs"
 			for j in range(i-1, 0, -1):
 				line_counts_[j] = line_counts_[j-1]
+			add_score()
+
+func add_score():
+	score_ += 1
+	step_time_ *= 0.99
+	if score_ == 1:
+		self.get_parent().get_child(0).text = "uno gecko"
+	else:
+		self.get_parent().get_child(0).text = String(score_) + " gecs"
+		if (score_ + 7) % 10 == 0:
+			execute_trip()
+
+func execute_trip():
+	BoofSound.play()
+	ScreenShader.set_shader_param("trip_level", lerp(20.0, 100.0, randf()))
+	ScreenShader.set_shader_param("trip", true)
+	trip_timer_.start()
+
+func stop_trip():
+	ScreenShader.set_shader_param("trip", false)
 
 func makeStep():
 	checkFullLines()
@@ -124,4 +153,6 @@ func _process(delta):
 		next_shape_.createRandomShape()
 		if !moving_shape_.canMove(0, 0):
 			gameOver()
+#	if Input.is_key_pressed(KEY_SPACE):
+#		add_score()
 

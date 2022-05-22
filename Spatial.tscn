@@ -1,14 +1,21 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://scripts/GameBoard.gd" type="Script" id=1]
 [ext_resource path="res://OdibeeSans-Regular.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://scripts/Control.gd" type="Script" id=3]
 [ext_resource path="res://scripts/TetrisShape.gd" type="Script" id=4]
 [ext_resource path="res://audio/gec.wav" type="AudioStream" id=5]
+[ext_resource path="res://shaders/screen_shader.tres" type="Shader" id=6]
+[ext_resource path="res://audio/boof.wav" type="AudioStream" id=7]
 
 [sub_resource type="DynamicFont" id=1]
 size = 40
 font_data = ExtResource( 2 )
+
+[sub_resource type="ShaderMaterial" id=6]
+shader = ExtResource( 6 )
+shader_param/trip = false
+shader_param/trip_level = null
 
 [sub_resource type="PlaneMesh" id=2]
 
@@ -30,13 +37,17 @@ text = "zero gec :("
 margin_right = 1278.0
 margin_bottom = 720.0
 script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
 fov = 80.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera"]
+
+[node name="ColorRect" type="ColorRect" parent="Camera/CanvasLayer"]
+material = SubResource( 6 )
+anchor_right = 1.0
+anchor_bottom = 1.0
 
 [node name="GameBoard" type="Spatial" parent="."]
 script = ExtResource( 1 )
@@ -67,5 +78,10 @@ transform = Transform( 0.3, 0, 0, 0, 2.05, 0, 0, 0, 0.4, -1.95, 0, 0 )
 mesh = SubResource( 4 )
 material/0 = null
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+[node name="audio" type="Node" parent="."]
+
+[node name="gec" type="AudioStreamPlayer" parent="audio"]
 stream = ExtResource( 5 )
+
+[node name="boof" type="AudioStreamPlayer" parent="audio"]
+stream = ExtResource( 7 )

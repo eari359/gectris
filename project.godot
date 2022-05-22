@@ -14,7 +14,8 @@ _global_script_class_icons={
 
 [application]
 
-config/name="testris"
+config/name="gectris"
+config/description="GEC GEC GEC"
 run/main_scene="res://Spatial.tscn"
 config/icon="res://icon.png"
 
