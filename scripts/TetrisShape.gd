@@ -63,22 +63,19 @@ func setShift(var s):
 func getShift():
 	return shift_from_left_
 
-func shift(var d):
+func _shift(var d):
 	shift_from_left_ += d
 
 func initPos():
 	self.translation = ORIGINAL_POSITION + Vector3(shift_from_left_*CUBE_SIDE, -fallen_distance_*CUBE_SIDE, 0)
 
 func _init(var board, var animator):
-	myInit(board, animator)
-
-func myInit(var board, var animator):
 	animator_ = animator
 	board_ = board
 	board_width_ = board.size()
 	board_height_ = board[0].size()
 
-func createCubeMesh(var x, var y, var c):
+func _createCubeMesh(var x, var y, var c):
 	var newInstance = MeshInstance.new()
 	newInstance.mesh = CubeMesh.new()
 	var mat = SpatialMaterial.new()
@@ -107,17 +104,16 @@ func createRandomShape():
 	type_ = randi()%7
 	rotation_ = randi()%4
 	var col = Color(randf(), randf(), randf())
-	add_child(createCubeMesh(SHAPE[type_][rotation_][2][0][0], SHAPE[type_][rotation_][2][0][1], col))
-	add_child(createCubeMesh(SHAPE[type_][rotation_][2][1][0], SHAPE[type_][rotation_][2][1][1], col))
-	add_child(createCubeMesh(SHAPE[type_][rotation_][2][2][0], SHAPE[type_][rotation_][2][2][1], col))
-	add_child(createCubeMesh(SHAPE[type_][rotation_][2][3][0], SHAPE[type_][rotation_][2][3][1], col))
+	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][0][0], SHAPE[type_][rotation_][2][0][1], col))
+	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][1][0], SHAPE[type_][rotation_][2][1][1], col))
+	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][2][0], SHAPE[type_][rotation_][2][2][1], col))
+	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][3][0], SHAPE[type_][rotation_][2][3][1], col))
 	shift_from_left_ = SHAPE[type_][rotation_][0]
 	fallen_distance_ = SHAPE[type_][rotation_][1]
 
 func canMove(var dx, var dy):
 	if self.get_children().empty():
 		return 0
-	
 	var stop
 	for cube in SHAPE[type_][rotation_][2]:
 		stop = 0
@@ -151,7 +147,7 @@ func tryMove(dir):
 	if canMove(dir, 0):
 		being_destroyed_ = false
 		animator_.translate(self, Vector3(dir*CUBE_SIDE, 0, 0))
-		shift(dir)
+		_shift(dir)
 
 func tryRotate():
 	if self.get_children().empty():

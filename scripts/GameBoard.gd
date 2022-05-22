@@ -25,7 +25,6 @@ var score_
 var time_
 var step_time_
 
-
 func prepareShapes():
 	moving_shape_ = TetrisShape.new(game_field_, animator_)
 	next_shape_ = TetrisShape.new(game_field_, animator_)
