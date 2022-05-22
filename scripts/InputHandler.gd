@@ -15,17 +15,10 @@ func _init(var moving_shape, var animator):
 const COUNTER_THRESHOLD = 1.5
 func stepMove(var key, var delta):
 	if Input.is_key_pressed(key):
-		var move_vector = Vector3(key_counters[key][1]*TetrisShape.getCubeSide(), 0, 0)
-		if key_counters[key][0] == 0 && moving_shape_.canMove(key_counters[key][1], 0):
-			emit_signal("ui_left")
-			animator_.translate(moving_shape_, move_vector)
-			moving_shape_.shift(key_counters[key][1])
+		if key_counters[key][0] == 0 || key_counters[key][0] > COUNTER_THRESHOLD:
+			moving_shape_.tryMove(key_counters[key][1])
 			key_counters[key][0] -= COUNTER_THRESHOLD
 		key_counters[key][0] += delta*20
-		if key_counters[key][0] > COUNTER_THRESHOLD && moving_shape_.canMove(key_counters[key][1], 0):
-			animator_.translate(moving_shape_, move_vector)
-			moving_shape_.shift(key_counters[key][1])
-			key_counters[key][0] -= COUNTER_THRESHOLD
 	else:
 		key_counters[key][0] = 0
 
@@ -51,8 +44,3 @@ func update(var delta):
 		was_up = true
 	else:
 		was_up = false
-
-func _input(event):
-	if event.is_action_pressed("ui_left"):
-		print("vlevo")
-		

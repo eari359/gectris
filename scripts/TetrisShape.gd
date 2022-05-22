@@ -32,10 +32,6 @@ const SHAPE = [
 
 const CUBE_SIDE = 0.3
 
-static func getCubeSide():
-	return CUBE_SIDE
-
-
 var shift_from_left_ = 0
 var fallen_distance_ = 0
 var board_height_
@@ -51,20 +47,25 @@ func getType():
 	return type_
 func setType(var type):
 	type_ = type
+
 func getRotation():
 	return rotation_
 func setRotation(var rot):
 	rotation_ = rot
+
 func setFall(var f):
 	fallen_distance_ = f
 func getFall():
 	return fallen_distance_
+
 func setShift(var s):
 	shift_from_left_ = s
 func getShift():
 	return shift_from_left_
+
 func shift(var d):
 	shift_from_left_ += d
+
 func initPos():
 	self.translation = ORIGINAL_POSITION + Vector3(shift_from_left_*CUBE_SIDE, -fallen_distance_*CUBE_SIDE, 0)
 
@@ -141,10 +142,20 @@ func fallOne():
 	else:
 		being_destroyed_ = true
 
+
+func tryMoveLeft():
+	tryMove(-1)
+func tryMoveRight():
+	tryMove(1)
+func tryMove(dir):
+	if canMove(dir, 0):
+		being_destroyed_ = false
+		animator_.translate(self, Vector3(dir*CUBE_SIDE, 0, 0))
+		shift(dir)
+
 func tryRotate():
 	if self.get_children().empty():
 		return
-	
 	var stop
 	var new_shape = Array()
 	new_shape.resize(4)

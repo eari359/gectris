@@ -8,6 +8,8 @@ onready var ScreenShader = $"../Camera/CanvasLayer/ColorRect".material
 onready var GecSound = $"../audio/gec"
 onready var BoofSound = $"../audio/boof"
 
+onready var SwipeHandler = $"../SwipeHandler"
+onready var GecLabel = $"../GecLabel"
 
 const FIELD_WIDTH = 10
 const FIELD_HEIGHT = 14
@@ -73,20 +75,16 @@ func initTripTimer():
 func _ready():
 	GecSound.play()
 	initAll()
-	self.get_parent().get_children()[1].connect("swipe", self, "swiped")
+	SwipeHandler.connect("swipe", self, "swiped")
 
 func swiped(var dir):
-	if dir == 1 && moving_shape_.canMove(1, 0):
-		var move_vector = Vector3(1*TetrisShape.getCubeSide(), 0, 0)
-		animator_.translate(moving_shape_, move_vector)
-		moving_shape_.shift(1)
-	elif dir == 0 && moving_shape_.canMove(-1, 0):
-		var move_vector = Vector3(-1*TetrisShape.getCubeSide(), 0, 0)
-		animator_.translate(moving_shape_, move_vector)
-		moving_shape_.shift(-1)
-	elif dir == 3:
+	if dir == 1: # right
+		moving_shape_.tryMoveRight()
+	elif dir == 0: # left
+		moving_shape_.tryMoveLeft()
+	elif dir == 3: # up
 		moving_shape_.tryRotate()
-	elif dir == 2:
+	elif dir == 2: # down
 		moving_shape_.fallOne()
 
 func removeLine(var to):
@@ -113,9 +111,9 @@ func add_score():
 	score_ += 1
 	step_time_ *= 0.99
 	if score_ == 1:
-		self.get_parent().get_child(0).text = "uno gecko"
+		GecLabel.text = "uno gecko"
 	else:
-		self.get_parent().get_child(0).text = String(score_) + " gecs"
+		GecLabel.text = String(score_) + " gecs"
 		if (score_ + 7) % 10 == 0:
 			execute_trip()
 
@@ -153,6 +151,4 @@ func _process(delta):
 		next_shape_.createRandomShape()
 		if !moving_shape_.canMove(0, 0):
 			gameOver()
-#	if Input.is_key_pressed(KEY_SPACE):
-#		add_score()
 

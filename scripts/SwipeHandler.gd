@@ -14,7 +14,6 @@ func _calculate_swipe(swipe_end):
 	if swipe_start == null: 
 		return
 	var swipe = swipe_end - swipe_start
-	print(swipe)
 	if abs(swipe.x) > minimum_drag:
 		if swipe.x > 0:
 			emit_signal("swipe", 1)
