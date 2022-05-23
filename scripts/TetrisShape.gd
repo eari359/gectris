@@ -149,9 +149,7 @@ func tryMove(dir):
 		animator_.translate(self, Vector3(dir*CUBE_SIDE, 0, 0))
 		_shift(dir)
 
-func tryRotate():
-	if self.get_children().empty():
-		return
+func _canRotate():
 	var stop
 	var new_shape = Array()
 	new_shape.resize(4)
@@ -171,7 +169,13 @@ func tryRotate():
 				|| board_[fieldx][fieldy] != null):
 			stop += 1
 			break
-	if not stop:
+	return not stop
+
+func tryRotate():
+	if self.get_children().empty():
+		return
+	if _canRotate():
+		being_destroyed_ = false
 		rotation_ = (rotation_+1)%4
 		var i = -1
 		for child in self.get_children():

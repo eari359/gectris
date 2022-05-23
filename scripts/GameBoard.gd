@@ -9,7 +9,7 @@ onready var GecSound = $"../audio/gec"
 onready var BoofSound = $"../audio/boof"
 
 onready var SwipeHandler = $"../SwipeHandler"
-onready var GecLabel = $"../GecLabel"
+onready var GecLabel = $"../GecControl"
 onready var Floor = $"../Floor"
 
 const FIELD_WIDTH = 10
@@ -102,11 +102,9 @@ func checkFullLines():
 func add_score():
 	score_ += 1
 	step_time_ *= 0.99
-	GecLabel.update_text(score_)
+	GecLabel.update_gecs(score_)
 	if (score_ + 7) % 10 == 0:
 		execute_trip()
-	if score_ % 10 == 0:
-		Floor.change_texture()
 
 func execute_trip():
 	BoofSound.play()
