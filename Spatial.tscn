@@ -7,7 +7,7 @@
 [ext_resource path="res://audio/gec.wav" type="AudioStream" id=5]
 [ext_resource path="res://shaders/screen_shader.tres" type="Shader" id=6]
 [ext_resource path="res://audio/boof.wav" type="AudioStream" id=7]
-[ext_resource path="res://scripts/GecLabel.gd" type="Script" id=8]
+[ext_resource path="res://scripts/GecControl.gd" type="Script" id=8]
 [ext_resource path="res://scripts/ShaderRect.gd" type="Script" id=9]
 [ext_resource path="res://scripts/Floor.gd" type="Script" id=11]
 

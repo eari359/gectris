@@ -56,7 +56,7 @@ func _score2gecs(score: int):
 	for i in range(tens):
 		gecs += "0"
 	return gecs
-	
+
 func update_gecs(score: int):
 	if score < GEC_LABEL_TABLE.size():
 		set_text(GEC_LABEL_TABLE[score][0])

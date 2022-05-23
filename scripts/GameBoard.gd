@@ -9,7 +9,7 @@ onready var GecSound = $"../audio/gec"
 onready var BoofSound = $"../audio/boof"
 
 onready var SwipeHandler = $"../SwipeHandler"
-onready var GecLabel = $"../GecControl"
+onready var GecControl = $"../GecControl"
 onready var Floor = $"../Floor"
 
 const FIELD_WIDTH = 10
@@ -21,7 +21,7 @@ var next_shape_
 var animator_
 var input_handler_
 var line_counts_
-var score_
+var score_ : int
 var time_
 var step_time_
 
@@ -101,8 +101,8 @@ func checkFullLines():
 
 func add_score():
 	score_ += 1
+	GecControl.update_gecs(score_)
 	step_time_ *= 0.99
-	GecLabel.update_gecs(score_)
 	if (score_ + 7) % 10 == 0:
 		execute_trip()
 
