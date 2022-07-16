@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://scripts/GameBoard.gd" type="Script" id=1]
 [ext_resource path="res://OdibeeSans-Regular.ttf" type="DynamicFontData" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://audio/boof.wav" type="AudioStream" id=7]
 [ext_resource path="res://scripts/GecControl.gd" type="Script" id=8]
 [ext_resource path="res://scripts/ShaderRect.gd" type="Script" id=9]
+[ext_resource path="res://scripts/GecRect.gd" type="Script" id=10]
 [ext_resource path="res://scripts/Floor.gd" type="Script" id=11]
 
 [sub_resource type="DynamicFont" id=1]
@@ -45,10 +46,16 @@ margin_bottom = 720.0
 script = ExtResource( 3 )
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
-fov = 80.0
+transform = Transform( 1, 0, 0, 0, 0.981591, 0.190997, 0, -0.190997, 0.981591, 0, 0.757914, 5.33827 )
+fov = 76.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera"]
+
+[node name="GecRect" type="TextureRect" parent="Camera/CanvasLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand = true
+script = ExtResource( 10 )
 
 [node name="ShaderRect" type="ColorRect" parent="Camera/CanvasLayer"]
 material = SubResource( 6 )
@@ -77,12 +84,12 @@ spot_range = 18.0579
 spot_angle = 25.7763
 
 [node name="right_column" type="MeshInstance" parent="."]
-transform = Transform( 0.3, 0, 0, 0, 2.05, 0, 0, 0, 0.4, 1.65, 0, 0 )
+transform = Transform( 0.3, 0, 0, 0, 2.65, 0, 0, 0, 0.4, 1.8, 0.6, 0 )
 mesh = SubResource( 3 )
 material/0 = null
 
 [node name="left_column" type="MeshInstance" parent="."]
-transform = Transform( 0.3, 0, 0, 0, 2.05, 0, 0, 0, 0.4, -1.95, 0, 0 )
+transform = Transform( 0.3, 0, 0, 0, 2.65, 0, 0, 0, 0.4, -1.8, 0.6, 0 )
 mesh = SubResource( 4 )
 material/0 = null
 

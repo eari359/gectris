@@ -4,16 +4,15 @@ var TetrisShape = preload("res://scripts/TetrisShape.gd")
 var Animator = preload("res://scripts/Animator.gd")
 var InputHandler = preload("res://scripts/InputHandler.gd")
 
-onready var ScreenShader = $"../Camera/CanvasLayer/ShaderRect"
+onready var GecRect = $"../Camera/CanvasLayer/GecRect"
 onready var GecSound = $"../audio/gec"
-onready var BoofSound = $"../audio/boof"
 
 onready var SwipeHandler = $"../SwipeHandler"
 onready var GecControl = $"../GecControl"
 onready var Floor = $"../Floor"
 
 const FIELD_WIDTH = 10
-const FIELD_HEIGHT = 14
+const FIELD_HEIGHT = 18
 
 var game_field_
 var moving_shape_
@@ -63,9 +62,9 @@ func initAll():
 	prepareShapes()
 	input_handler_ = InputHandler.new(moving_shape_, animator_)
 	Floor.reset_texture()
+	GecRect.reset()
 
 func _ready():
-	GecSound.play()
 	initAll()
 	SwipeHandler.connect("swipe", self, "swiped")
 
@@ -102,13 +101,9 @@ func checkFullLines():
 func add_score():
 	score_ += 1
 	GecControl.update_gecs(score_)
+	GecRect.add_gec()
 	step_time_ *= 0.99
-	if (score_ + 7) % 10 == 0:
-		execute_trip()
 
-func execute_trip():
-	BoofSound.play()
-	ScreenShader.execute_trip()
 
 func makeStep():
 	checkFullLines()

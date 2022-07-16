@@ -32,6 +32,8 @@ const SHAPE = [
 
 const CUBE_SIDE = 0.3
 
+var starting_position_ : Vector3
+
 var shift_from_left_ = 0
 var fallen_distance_ = 0
 var board_height_
@@ -67,13 +69,14 @@ func _shift(var d):
 	shift_from_left_ += d
 
 func initPos():
-	self.translation = ORIGINAL_POSITION + Vector3(shift_from_left_*CUBE_SIDE, -fallen_distance_*CUBE_SIDE, 0)
+	self.translation = starting_position_ + Vector3(shift_from_left_*CUBE_SIDE, -fallen_distance_*CUBE_SIDE, 0)
 
 func _init(var board, var animator):
 	animator_ = animator
 	board_ = board
 	board_width_ = board.size()
 	board_height_ = board[0].size()
+	starting_position_ = Vector3(-5*CUBE_SIDE+0.5*CUBE_SIDE, -2.2 + board_height_*CUBE_SIDE, 0)
 
 func _createCubeMesh(var x, var y, var c):
 	var newInstance = MeshInstance.new()
@@ -97,13 +100,15 @@ func update():
 				self.get_parent().add_child(child)
 				self.get_parent().line_counts_[fieldy] += 1
 				animator_.stopAnimation(child)
-				child.translation = ORIGINAL_POSITION + Vector3(fieldx*CUBE_SIDE, -fieldy*CUBE_SIDE, 0)
+				child.translation = starting_position_ + Vector3(fieldx*CUBE_SIDE, -fieldy*CUBE_SIDE, 0)
 			being_destroyed_ = false
 
 func createRandomShape():
 	type_ = randi()%7
 	rotation_ = randi()%4
-	var col = Color(randf(), randf(), randf())
+	
+	var sat_val = 0.7 + randf()*0.3
+	var col = Color.from_hsv(randf(), sat_val, sat_val)
 	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][0][0], SHAPE[type_][rotation_][2][0][1], col))
 	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][1][0], SHAPE[type_][rotation_][2][1][1], col))
 	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][2][0], SHAPE[type_][rotation_][2][2][1], col))
@@ -127,7 +132,6 @@ func canMove(var dx, var dy):
 			break;
 	return not stop
 
-const ORIGINAL_POSITION = Vector3(-5*CUBE_SIDE, 2, 0)
 func fallOne():
 	if self.get_children().empty():
 		return 0
