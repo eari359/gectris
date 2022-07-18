@@ -16,7 +16,7 @@ func _ready():
 	texture = ImageTexture.new()
 
 func _generate_random_position() -> Vector2:
-	return Vector2(randf() * image_.get_size().x, randf() * image_.get_size().y)
+	return Vector2(randf() * (image_.get_size().x - GEC_SIZE.x + 20), randf() * (image_.get_size().y - GEC_SIZE.y + 20))
 
 onready var colored_img = Image.new()
 onready var colored_gec = Image.new()
