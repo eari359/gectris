@@ -42,11 +42,14 @@ const GEC_LABEL_TABLE = [
 	["3000 gecs"],
 	["4000 gecs"],
 	["5000 gecs"],
-	["6000 gecs"],
-	["7000 gecs", preload("res://images/1000gecs+toc.jpg"), preload("res://audio/toothless.wav")],
+	["6000 gecs", preload("res://images/1000gecs+toc.jpg"), preload("res://audio/toothless.wav")],
+	["7000 gecs"],
 	["8485 gecs", null, preload("res://audio/8485.wav")],
 	["9000 gecs"],
 	["10000 gecs", preload("res://images/10000gecs.jpg"), preload("res://audio/mememe.wav")],
+	["20000 gecs"],
+	["30000 gecs"],
+	["40000 gecs", preload("res://images/doritos_fritos.jpg"), preload("res://audio/doritos_fritos.wav")],
 ]
 
 func _score2gecs(score: int):
