@@ -33,7 +33,7 @@ const GEC_LABEL_TABLE = [
 	["420 gecs"],
 	["500 gecs"],
 	["690 gecs"],
-	["745 Sticky"],
+	["745 Sticky", null, preload("res://audio/745.wav")],
 	["800db cloud", null, preload("res://audio/800db.wav")],
 	["888db Cloud (Black Dresses Cover)", null, preload("res://audio/888db.wav")],
 	["909 Worldwide", null, preload("res://audio/909.wav")],
