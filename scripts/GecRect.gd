@@ -23,7 +23,7 @@ func _generate_random_position() -> Vector2:
 onready var colored_img = Image.new()
 func add_gec():
 	colored_img.fill(Color(randf(), randf(), randf(), 0.8))
-	image_.blend_rect_mask(colored_img, gec_pic, Rect2(0, 0, 100, 100), _generate_random_position())
+	image_.blend_rect_mask(colored_img, gec_pic, Rect2(Vector2(), GEC_SIZE), _generate_random_position())
 	texture.create_from_image(image_)
 
 func reset():
