@@ -30,7 +30,7 @@ func update(var delta):
 	_stepMove(KEY_RIGHT, delta)
 	if Input.is_key_pressed(KEY_DOWN):
 		if not was_down:
-			moving_shape_.fallOne()
+			moving_shape_.instaFall()
 		was_down = true
 		down_counter += delta
 		if down_counter > 0.1:

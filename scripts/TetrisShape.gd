@@ -41,35 +41,22 @@ var board_width_
 var type_
 var rotation_
 var being_destroyed_ = false
+var color_
+
+var shape_cubes_ = Spatial.new()
+var phantom_
 
 var board_
 var animator_
 
-func getType():
-	return type_
-func setType(var type):
-	type_ = type
-
-func getRotation():
-	return rotation_
-func setRotation(var rot):
-	rotation_ = rot
-
-func setFall(var f):
-	fallen_distance_ = f
-func getFall():
-	return fallen_distance_
-
-func setShift(var s):
-	shift_from_left_ = s
-func getShift():
-	return shift_from_left_
+func _ready():
+	add_child(shape_cubes_)
 
 func _shift(var d):
 	shift_from_left_ += d
 
 func initPos():
-	self.translation = starting_position_ + Vector3(shift_from_left_*CUBE_SIDE, -fallen_distance_*CUBE_SIDE, 0)
+	shape_cubes_.translation = starting_position_ + Vector3(shift_from_left_*CUBE_SIDE, -fallen_distance_*CUBE_SIDE, 0)
 
 func _init(var board, var animator):
 	animator_ = animator
@@ -88,36 +75,87 @@ func _createCubeMesh(var x, var y, var c):
 	newInstance.scale = Vector3(CUBE_SIDE/2, CUBE_SIDE/2, CUBE_SIDE/2)
 	return newInstance
 
+func destroyPhantom():
+	if phantom_:
+		phantom_.queue_free()
+
+func assign(other):
+	destroyPhantom()
+	type_ = other.type_
+	rotation_ = other.rotation_
+	color_ = other.color_
+	fallen_distance_ = other.fallen_distance_
+	shift_from_left_ = other.shift_from_left_
+	for cube in other.shape_cubes_.get_children():
+		other.shape_cubes_.remove_child(cube)
+		shape_cubes_.add_child(cube)
+	createPhantom()
+	updatePhantom()
+
 func update():
 	if being_destroyed_:
-		if !animator_.isAnimated(self):
+		if !animator_.isAnimated(shape_cubes_):
 			for i in range(4):
 				var fieldx = SHAPE[type_][rotation_][2][i][0]+shift_from_left_;
 				var fieldy = SHAPE[type_][rotation_][2][i][1]+fallen_distance_;
-				var child = self.get_children().back()
+				var child = shape_cubes_.get_children().front()
 				board_[fieldx][fieldy] = child;
-				self.remove_child(child)
+				shape_cubes_.remove_child(child)
 				self.get_parent().add_child(child)
 				self.get_parent().line_counts_[fieldy] += 1
 				animator_.stopAnimation(child)
 				child.translation = starting_position_ + Vector3(fieldx*CUBE_SIDE, -fieldy*CUBE_SIDE, 0)
 			being_destroyed_ = false
 
+func _createPhantomCube(var x, var y, var c):
+	var newInstance = MeshInstance.new()
+	newInstance.mesh = CubeMesh.new()
+	var mat = ShaderMaterial.new()
+	mat.set_shader(preload("res://shaders/phantom_shader.tres"))
+	newInstance.mesh.surface_set_material(0, mat)
+	newInstance.translation = Vector3(x*CUBE_SIDE, -y*CUBE_SIDE, 0)
+	newInstance.scale = Vector3(CUBE_SIDE/2.2, CUBE_SIDE/2.2, CUBE_SIDE/2.2)
+	return newInstance
+
+func createPhantom():
+	phantom_ = Spatial.new()
+	add_child(phantom_)
+	phantom_.add_child(_createPhantomCube(SHAPE[type_][rotation_][2][0][0], SHAPE[type_][rotation_][2][0][1], color_))
+	phantom_.add_child(_createPhantomCube(SHAPE[type_][rotation_][2][1][0], SHAPE[type_][rotation_][2][1][1], color_))
+	phantom_.add_child(_createPhantomCube(SHAPE[type_][rotation_][2][2][0], SHAPE[type_][rotation_][2][2][1], color_))
+	phantom_.add_child(_createPhantomCube(SHAPE[type_][rotation_][2][3][0], SHAPE[type_][rotation_][2][3][1], color_))
+
+func updatePhantom():
+	if phantom_:
+		var phantom_offset = 0
+		while canMove(0, phantom_offset + 1):
+			phantom_offset += 1
+		phantom_.translation = starting_position_ + Vector3(shift_from_left_*CUBE_SIDE, -fallen_distance_*CUBE_SIDE, 0)
+		phantom_.translate(Vector3(0, -phantom_offset*CUBE_SIDE, 0))
+		var i = -1
+		for child in phantom_.get_children():
+			i += 1
+			child.translation =  Vector3(
+				CUBE_SIDE*SHAPE[type_][rotation_][2][i][0],
+				-CUBE_SIDE*SHAPE[type_][rotation_][2][i][1], 0)
+
 func createRandomShape():
 	type_ = randi()%7
 	rotation_ = randi()%4
 	
 	var sat_val = 0.7 + randf()*0.3
-	var col = Color.from_hsv(randf(), sat_val, sat_val)
-	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][0][0], SHAPE[type_][rotation_][2][0][1], col))
-	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][1][0], SHAPE[type_][rotation_][2][1][1], col))
-	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][2][0], SHAPE[type_][rotation_][2][2][1], col))
-	add_child(_createCubeMesh(SHAPE[type_][rotation_][2][3][0], SHAPE[type_][rotation_][2][3][1], col))
+	color_ = Color.from_hsv(randf(), sat_val, sat_val)
+	shape_cubes_ = Spatial.new()
+	add_child(shape_cubes_)
+	shape_cubes_.add_child(_createCubeMesh(SHAPE[type_][rotation_][2][0][0], SHAPE[type_][rotation_][2][0][1], color_))
+	shape_cubes_.add_child(_createCubeMesh(SHAPE[type_][rotation_][2][1][0], SHAPE[type_][rotation_][2][1][1], color_))
+	shape_cubes_.add_child(_createCubeMesh(SHAPE[type_][rotation_][2][2][0], SHAPE[type_][rotation_][2][2][1], color_))
+	shape_cubes_.add_child(_createCubeMesh(SHAPE[type_][rotation_][2][3][0], SHAPE[type_][rotation_][2][3][1], color_))
 	shift_from_left_ = SHAPE[type_][rotation_][0]
 	fallen_distance_ = SHAPE[type_][rotation_][1]
 
 func canMove(var dx, var dy):
-	if self.get_children().empty():
+	if shape_cubes_.get_children().empty():
 		return 0
 	var stop
 	for cube in SHAPE[type_][rotation_][2]:
@@ -132,16 +170,21 @@ func canMove(var dx, var dy):
 			break;
 	return not stop
 
-func fallOne():
-	if self.get_children().empty():
-		return 0
+func fallOne(var amt = 10.0) -> bool:
+	if shape_cubes_.get_children().empty():
+		return false
 	
-	if (canMove(0, 1)):
+	if canMove(0, 1):
 		fallen_distance_ += 1;
-		animator_.translate(self, Vector3(0, -CUBE_SIDE, 0))
+		animator_.translate(shape_cubes_, Vector3(0, -CUBE_SIDE, 0), amt)
+		return true
 	else:
 		being_destroyed_ = true
+		return false
 
+func instaFall():
+	while fallOne(15.0):
+		pass
 
 func tryMoveLeft():
 	tryMove(-1)
@@ -150,8 +193,9 @@ func tryMoveRight():
 func tryMove(dir):
 	if canMove(dir, 0):
 		being_destroyed_ = false
-		animator_.translate(self, Vector3(dir*CUBE_SIDE, 0, 0))
+		animator_.translate(shape_cubes_, Vector3(dir*CUBE_SIDE, 0, 0))
 		_shift(dir)
+		updatePhantom()
 
 func _canRotate():
 	var stop
@@ -176,15 +220,16 @@ func _canRotate():
 	return not stop
 
 func tryRotate():
-	if self.get_children().empty():
+	if shape_cubes_.get_children().empty():
 		return
 	if _canRotate():
 		being_destroyed_ = false
 		rotation_ = (rotation_+1)%4
 		var i = -1
-		for child in self.get_children():
+		for child in shape_cubes_.get_children():
 			i += 1
 			animator_.setTranslation(child, Vector3(
 				CUBE_SIDE*SHAPE[type_][rotation_][2][i][0],
 				-CUBE_SIDE*SHAPE[type_][rotation_][2][i][1], 0), 17.5)
+		updatePhantom()
 

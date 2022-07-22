@@ -34,6 +34,7 @@ func prepareShapes():
 	add_child(moving_shape_)
 
 func gameOver():
+	print("GAME OVER")
 	moving_shape_.queue_free()
 	next_shape_.queue_free()
 	for c in self.get_children():
@@ -88,6 +89,7 @@ func removeLine(var to):
 			var cube = game_field_[j][i+1]
 			if cube != null:
 				animator_.translate(cube, Vector3(0, -2, 0))
+	moving_shape_.updatePhantom()
 
 func checkFullLines():
 	for i in range (FIELD_HEIGHT-1, -1, -1):
@@ -117,17 +119,11 @@ func _process(delta):
 	input_handler_.update(delta)
 	animator_.update(delta)
 	moving_shape_.update()
-	if moving_shape_.get_children().empty():
-		moving_shape_.setType(next_shape_.getType())
-		moving_shape_.setRotation(next_shape_.getRotation())
-		moving_shape_.setFall(next_shape_.getFall())
-		moving_shape_.setShift(next_shape_.getShift())
+	if !moving_shape_.shape_cubes_ or moving_shape_.shape_cubes_.get_children().empty():
+		moving_shape_.assign(next_shape_)
 		animator_.stopAnimation(moving_shape_)
-		moving_shape_.initPos()
-		for child in next_shape_.get_children():
-			next_shape_.remove_child(child)
-			moving_shape_.add_child(child)
 		next_shape_.createRandomShape()
+		moving_shape_.initPos()
 		if !moving_shape_.canMove(0, 0):
 			gameOver()
 	if OS.is_debug_build() && Input.is_key_pressed(KEY_SPACE):
