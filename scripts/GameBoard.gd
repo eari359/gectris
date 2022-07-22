@@ -77,7 +77,7 @@ func swiped(var dir):
 	elif dir == 3: # up
 		moving_shape_.tryRotate()
 	elif dir == 2: # down
-		moving_shape_.fallOne()
+		moving_shape_.instaFall()
 
 func removeLine(var to):
 	GecSound.play()
