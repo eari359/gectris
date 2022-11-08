@@ -63,7 +63,7 @@ func _init(var board, var animator):
 	board_ = board
 	board_width_ = board.size()
 	board_height_ = board[0].size()
-	starting_position_ = Vector3(-5*CUBE_SIDE+0.5*CUBE_SIDE, -2.2 + board_height_*CUBE_SIDE, 0)
+	starting_position_ = Vector3(-5*CUBE_SIDE+0.5*CUBE_SIDE, board_height_*CUBE_SIDE, 0)
 
 func _createCubeMesh(var x, var y, var c):
 	var newInstance = MeshInstance.new()
@@ -89,7 +89,7 @@ func assign(other):
 	for cube in other.shape_cubes_.get_children():
 		other.shape_cubes_.remove_child(cube)
 		shape_cubes_.add_child(cube)
-	createPhantom()
+	_createPhantom()
 	updatePhantom()
 
 func update():
@@ -117,7 +117,7 @@ func _createPhantomCube(var x, var y, var c):
 	newInstance.scale = Vector3(CUBE_SIDE/2.2, CUBE_SIDE/2.2, CUBE_SIDE/2.2)
 	return newInstance
 
-func createPhantom():
+func _createPhantom():
 	phantom_ = Spatial.new()
 	add_child(phantom_)
 	phantom_.add_child(_createPhantomCube(SHAPE[type_][rotation_][2][0][0], SHAPE[type_][rotation_][2][0][1], color_))
@@ -154,7 +154,7 @@ func createRandomShape():
 	shift_from_left_ = SHAPE[type_][rotation_][0]
 	fallen_distance_ = SHAPE[type_][rotation_][1]
 
-func canMove(var dx, var dy):
+func canMove(var dx: int, var dy: int):
 	if shape_cubes_.get_children().empty():
 		return 0
 	var stop
@@ -170,7 +170,7 @@ func canMove(var dx, var dy):
 			break;
 	return not stop
 
-func fallOne(var amt = 10.0) -> bool:
+func fallOne(var amt := 10.0) -> bool:
 	if shape_cubes_.get_children().empty():
 		return false
 	

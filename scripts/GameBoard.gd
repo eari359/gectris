@@ -12,7 +12,7 @@ onready var GecControl = $"../GecControl"
 onready var Floor = $"../Floor"
 
 const FIELD_WIDTH = 10
-const FIELD_HEIGHT = 18
+const FIELD_HEIGHT = 22
 
 var game_field_
 var moving_shape_
