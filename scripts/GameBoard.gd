@@ -14,9 +14,11 @@ onready var Floor = $"../Floor"
 const FIELD_WIDTH = 10
 const FIELD_HEIGHT = 22
 
+const NEXT_SHAPE_QUEUE_SIZE = 4
+
 var game_field_
 var moving_shape_
-var next_shape_
+var next_shape_queue_ := []
 var animator_
 var input_handler_
 var line_counts_
@@ -24,19 +26,36 @@ var score_ : int
 var time_
 var step_time_
 
-func prepareShapes():
+func _next_moving_shape():
+	moving_shape_.assign(next_shape_queue_[0])
+	for i in range(NEXT_SHAPE_QUEUE_SIZE - 1):
+		next_shape_queue_[i].assign_animated(next_shape_queue_[i+1])
+	animator_.stopAnimation(moving_shape_)
+	next_shape_queue_.back().createRandomShape()
+	moving_shape_.initPos()
+	moving_shape_.createPhantom()
+
+func _prepare_next_shape_queue():
+	for i in range(4):
+		next_shape_queue_.push_back(TetrisShape.new(game_field_, animator_))
+		next_shape_queue_.back().createRandomShape()
+		next_shape_queue_.back().translate(Vector3(4, 0, 0))
+		next_shape_queue_.back().rotate_y(-PI/6)
+		add_child(next_shape_queue_.back())
+		for shape in next_shape_queue_:
+			shape.translate(Vector3(0, 1.5, 0))
+
+func _prepareShapes():
 	moving_shape_ = TetrisShape.new(game_field_, animator_)
-	next_shape_ = TetrisShape.new(game_field_, animator_)
-	next_shape_.createRandomShape();
-	next_shape_.translate(Vector3(4, 0, 0))
-	next_shape_.rotate_y(-PI/3)
-	add_child(next_shape_)
+	_prepare_next_shape_queue()
 	add_child(moving_shape_)
 
 func gameOver():
 	print("GAME OVER")
 	moving_shape_.queue_free()
-	next_shape_.queue_free()
+	for shape in next_shape_queue_:
+		shape.queue_free()
+	next_shape_queue_.clear()
 	for c in self.get_children():
 		c.queue_free()
 	initAll()
@@ -60,7 +79,7 @@ func initVars():
 func initAll():
 	randomize()
 	initVars()
-	prepareShapes()
+	_prepareShapes()
 	input_handler_ = InputHandler.new(moving_shape_, animator_)
 	Floor.reset_texture()
 	GecRect.reset()
@@ -120,10 +139,7 @@ func _process(delta):
 	animator_.update(delta)
 	moving_shape_.update()
 	if !moving_shape_.shape_cubes_ or moving_shape_.shape_cubes_.get_children().empty():
-		moving_shape_.assign(next_shape_)
-		animator_.stopAnimation(moving_shape_)
-		next_shape_.createRandomShape()
-		moving_shape_.initPos()
+		_next_moving_shape()
 		if !moving_shape_.canMove(0, 0):
 			gameOver()
 	if OS.is_debug_build() && Input.is_key_pressed(KEY_SPACE):

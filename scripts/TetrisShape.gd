@@ -78,6 +78,7 @@ func _createCubeMesh(var x, var y, var c):
 func destroyPhantom():
 	if phantom_:
 		phantom_.queue_free()
+	
 
 func assign(other):
 	destroyPhantom()
@@ -89,8 +90,12 @@ func assign(other):
 	for cube in other.shape_cubes_.get_children():
 		other.shape_cubes_.remove_child(cube)
 		shape_cubes_.add_child(cube)
-	_createPhantom()
-	updatePhantom()
+
+func assign_animated(other):
+	assign(other)
+	for cube in shape_cubes_.get_children():
+		cube.translate((other.translation-translation)/CUBE_SIDE*2)
+		animator_.translate(cube, (translation-other.translation)/CUBE_SIDE*2)
 
 func update():
 	if being_destroyed_:
@@ -117,13 +122,14 @@ func _createPhantomCube(var x, var y, var c):
 	newInstance.scale = Vector3(CUBE_SIDE/2.2, CUBE_SIDE/2.2, CUBE_SIDE/2.2)
 	return newInstance
 
-func _createPhantom():
+func createPhantom():
 	phantom_ = Spatial.new()
 	add_child(phantom_)
 	phantom_.add_child(_createPhantomCube(SHAPE[type_][rotation_][2][0][0], SHAPE[type_][rotation_][2][0][1], color_))
 	phantom_.add_child(_createPhantomCube(SHAPE[type_][rotation_][2][1][0], SHAPE[type_][rotation_][2][1][1], color_))
 	phantom_.add_child(_createPhantomCube(SHAPE[type_][rotation_][2][2][0], SHAPE[type_][rotation_][2][2][1], color_))
 	phantom_.add_child(_createPhantomCube(SHAPE[type_][rotation_][2][3][0], SHAPE[type_][rotation_][2][3][1], color_))
+	updatePhantom()
 
 func updatePhantom():
 	if phantom_:
